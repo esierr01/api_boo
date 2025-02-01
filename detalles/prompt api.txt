@@ -1,0 +1,69 @@
+Necesito crear una api en nodejs que maneja una bd en mongodb atlas, que maneja 5 colecciones, la api debe poder hacer las operaciones básicas de: Crear un registro, Listar todos los registros, Obtener un registro por su ID y Eliminar un registro por su ID. en cada una de las colecciones. hay una de las colecciones en las cuales se va a almacenar la url de una imagen (formato jpg, jpeg o png) y un video (formato mp4) que se van a guardar en la estructura de archivos de la api. hay otra colección donde se va a almacenar la url de un documento (formato pdf) que tambien se va a guardar en la estructura de archivos de la api.
+
+debes tomar en cuenta: 
+1- usar un archivo .env donde se guardará el puerto a utilizar y la MONGO_URI
+2- debe haber un directorio en la raiz \uploads donde se guardaran los archivos a subir, \uploads\img \uploads\vid \uploads\doc.
+3- se trabajara con una base de datos en mongodb atlas, el proyecto y el cluster se llaman boodb, la base de datos se llama boodb
+4- ahora te paso la estructura de cada una de las 5 colecciones de la bd:
+
+Coleccion eventos:
+_id	Autogenerado	
+titulo	String		
+descripcion	String		
+ubicación	String		
+mitoLeyenda	boolean
+urlImagen	String
+urlVideo	String
+idUsuario	int
+fechaCreacion	date
+estrellas	int
+popularidad	int
+activo	boolean
+revisionAprobado	boolean
+mensajeAproba	String
+fechaAproba	date
+
+Coleccion usuarios:
+_id	Autogenerado
+nombre	String
+email	String
+password	String
+rol	String
+urlFotoPerfil	String
+fechaRegistro	date
+ultimaActividad	date
+activo	boolean
+
+Coleccion doc_historicos:
+doc_historicos	
+_id	Autogenerado
+titulo	String
+descripcion	String
+fechaCarga	date
+urlDocumento	String
+idUsuario	int
+
+Colección mapas:
+_id	Autogenerado
+titulo	String
+descripcion	String
+ubiNombre	String
+ubiLatitud	Float
+ubiLongitud	Float
+idUusuario	int
+fechaCreacion	date
+
+Coleccion observaciones:
+_id	Autogenerado
+idUsuario	int
+idEvento	int
+mensaje	String
+fechaEnvio	date
+mensaRespondido	boolean
+respuesta	String
+idUsuarRespuesta	int
+fechaRespuesta	date
+
+necesito todos los comandos de creación del proyecto, instalación de dependencias, la estructura del proyecto completa (sin omisiones),  el codigo de todos los archivos que componen la api (sin omisiones), necesito que me especifiques todos los endpoint creados para cada una de las colecciones de la bd
+
+ 

@@ -1,0 +1,11 @@
+mongodb+srv://usradopcion:GdS122fNaESToZlW@adopcion.hta96.mongodb.net/?retryWrites=true&w=majority&appName=adopcion
+mongodb+srv://usradopcion:<db_password>@adopcion.hta96.mongodb.net/?retryWrites=true&w=majority&appName=adopcion
+
+
+projecto: boodb
+cluster: boodb
+
+username: usrboodb
+password: 3pjbruNzNtmVDwL0
+
+mongodb+srv://usrboodb:3pjbruNzNtmVDwL0@boodb.qqbxl.mongodb.net/?retryWrites=true&w=majority&appName=boodb

@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ext": "js",
+  "ignore": ["src/uploads/**"],
+  "exec": "node --experimental-modules src/index.js"
+}
