@@ -1,49 +1,56 @@
 import Evento from "../models/Evento.js";
-import Usuario from "../models/Usuario.js"; // Importar el modelo de Usuario
+import Usuario from "../models/Usuario.js";
 import { deleteFile } from "../utils/fileUpload.js";
+import {
+  uploadFileToFilestack,
+  deleteFileFromLocal,
+} from "../utils/filestack.js";
 import { obtenerFecha, obtenerHora } from "../utils/fechaHora.js";
 
 export const createEvento = async (req, res) => {
   req.body.fechaCreacion = obtenerFecha() + " - " + obtenerHora();
 
   try {
-    // Verificar si el idUsuario existe en la colección de usuarios
     const usuarioExistente = await Usuario.findById(req.body.idUsuario);
     if (!usuarioExistente) {
-      // Eliminar archivos subidos si el usuario no existe
       if (req.files) {
         if (req.files.urlImagen) {
-          deleteFile(req.files.urlImagen[0].path); // Eliminar la imagen subida
+          deleteFile(req.files.urlImagen[0].path);
         }
         if (req.files.urlVideo) {
-          deleteFile(req.files.urlVideo[0].path); // Eliminar el video subido
+          deleteFile(req.files.urlVideo[0].path);
         }
       }
       return res.status(400).json({ error: "El usuario no existe" });
     }
 
-    // Asignar las rutas de los archivos subidos (si existen)
     if (req.files) {
       if (req.files.urlImagen) {
-        req.body.urlImagen = req.files.urlImagen[0].path; // Asignar la ruta de la imagen
+        const imageUrl = await uploadFileToFilestack(
+          req.files.urlImagen[0].path
+        );
+        req.body.urlImagen = imageUrl;
+        deleteFileFromLocal(req.files.urlImagen[0].path);
       }
       if (req.files.urlVideo) {
-        req.body.urlVideo = req.files.urlVideo[0].path; // Asignar la ruta del video
+        const videoUrl = await uploadFileToFilestack(
+          req.files.urlVideo[0].path
+        );
+        req.body.urlVideo = videoUrl;
+        deleteFileFromLocal(req.files.urlVideo[0].path);
       }
     }
 
-    // Crear y guardar el evento
     const evento = new Evento(req.body);
     await evento.save();
     res.status(201).json(evento);
   } catch (err) {
-    // Eliminar archivos subidos si ocurre un error
     if (req.files) {
       if (req.files.urlImagen) {
-        deleteFile(req.files.urlImagen[0].path); // Eliminar la imagen subida
+        deleteFile(req.files.urlImagen[0].path);
       }
       if (req.files.urlVideo) {
-        deleteFile(req.files.urlVideo[0].path); // Eliminar el video subido
+        deleteFile(req.files.urlVideo[0].path);
       }
     }
     res.status(400).json({ error: err.message });
@@ -74,19 +81,31 @@ export const updateEvento = async (req, res) => {
     const evento = await Evento.findById(req.params.id);
     if (!evento) return res.status(404).json({ error: "Evento no encontrado" });
 
-    // Eliminar archivos antiguos si se suben nuevos
-    if (req.files) {
-      if (req.files.urlImagen) {
-        if (evento.urlImagen) {
-          deleteFile(evento.urlImagen); // Eliminar la imagen anterior
-        }
-        req.body.urlImagen = req.files.urlImagen[0].path; // Asignar la nueva imagen
+    // Si se sube un nuevo archivo de imagen
+    if (req.files && req.files.urlImagen) {
+      const newImageUrl = await uploadFileToFilestack(
+        req.files.urlImagen[0].path
+      );
+      req.body.urlImagen = newImageUrl; // Asignar la nueva URL
+      deleteFileFromLocal(req.files.urlImagen[0].path);
+
+      // Eliminar la imagen antigua de Filestack (si existe)
+      if (evento.urlImagen) {
+        // Aquí puedes agregar lógica para eliminar el archivo de Filestack si es necesario
       }
-      if (req.files.urlVideo) {
-        if (evento.urlVideo) {
-          deleteFile(evento.urlVideo); // Eliminar el video anterior
-        }
-        req.body.urlVideo = req.files.urlVideo[0].path; // Asignar el nuevo video
+    }
+
+    // Si se sube un nuevo archivo de video
+    if (req.files && req.files.urlVideo) {
+      const newVideoUrl = await uploadFileToFilestack(
+        req.files.urlVideo[0].path
+      );
+      req.body.urlVideo = newVideoUrl; // Asignar la nueva URL
+      deleteFileFromLocal(req.files.urlVideo[0].path);
+
+      // Eliminar el video antiguo de Filestack (si existe)
+      if (evento.urlVideo) {
+        // Aquí puedes agregar lógica para eliminar el archivo de Filestack si es necesario
       }
     }
 
@@ -97,6 +116,14 @@ export const updateEvento = async (req, res) => {
     );
     res.status(200).json(eventoActualizado);
   } catch (err) {
+    if (req.files) {
+      if (req.files.urlImagen) {
+        deleteFile(req.files.urlImagen[0].path);
+      }
+      if (req.files.urlVideo) {
+        deleteFile(req.files.urlVideo[0].path);
+      }
+    }
     res.status(400).json({ error: err.message });
   }
 };
@@ -106,12 +133,14 @@ export const deleteEvento = async (req, res) => {
     const evento = await Evento.findByIdAndDelete(req.params.id);
     if (!evento) return res.status(404).json({ error: "Evento no encontrado" });
 
-    // Eliminar archivos asociados (imagen y video)
+    // Eliminar la imagen de Filestack (si existe)
     if (evento.urlImagen) {
-      deleteFile(evento.urlImagen);
+      // Aquí puedes agregar lógica para eliminar el archivo de Filestack si es necesario
     }
+
+    // Eliminar el video de Filestack (si existe)
     if (evento.urlVideo) {
-      deleteFile(evento.urlVideo);
+      // Aquí puedes agregar lógica para eliminar el archivo de Filestack si es necesario
     }
 
     res.status(200).json({ message: "Evento eliminado correctamente" });
@@ -142,14 +171,7 @@ export const aprobarRechazarEvento = async (req, res) => {
     evento.mensajeAproba = mensajeAproba;
     evento.fechaAproba = obtenerFecha() + " - " + obtenerHora(); // Fecha y hora actual
     evento.revisionAprobado = revisionAprobado;
-
-    // Si el evento no es aprobado, mantener activo = false
-    if (!revisionAprobado) {
-      evento.activo = false;
-    } else {
-      // Si el evento es aprobado, establecer activo = true
-      evento.activo = true;
-    }
+    evento.activo = revisionAprobado;
 
     // Guardar los cambios en la base de datos
     await evento.save();

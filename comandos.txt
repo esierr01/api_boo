@@ -1,6 +1,6 @@
 npm init -y
 npm install express mongoose dotenv multer nodemon
-
+npm install filestack-js
 npm install moment-timezone
 
 Endpoints

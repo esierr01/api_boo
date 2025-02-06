@@ -14,8 +14,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Configurar Express para servir archivos estáticos desde el directorio "uploads"
-const __dirname = path.resolve();
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Si ya no usas la carpeta "uploads", puedes eliminar o comentar esta línea
+// const __dirname = path.resolve();
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Para form-data
