@@ -12,11 +12,11 @@ export const createUsuario = async (req, res) => {
   req.body.fechaRegistro = obtenerFecha() + " - " + obtenerHora();
   req.body.ultimaActividad = obtenerFecha() + " - " + obtenerHora();
   try {
-    if (req.file) {
-      const fileUrl = await uploadFileToFilestack(req.file.path);
-      req.body.urlFotoPerfil = fileUrl;
-      deleteFileFromLocal(req.file.path);
-    }
+    // if (req.file) {
+    //   const fileUrl = await uploadFileToFilestack(req.file.path);
+    //   req.body.urlFotoPerfil = fileUrl;
+    //   deleteFileFromLocal(req.file.path);
+    // }
 
     const usuario = new Usuario(req.body);
     await usuario.save();
@@ -54,16 +54,16 @@ export const updateUsuario = async (req, res) => {
       return res.status(404).json({ error: "Usuario no encontrado" });
 
     // Si se sube una nueva foto de perfil
-    if (req.file) {
-      const newFileUrl = await uploadFileToFilestack(req.file.path);
-      req.body.urlFotoPerfil = newFileUrl; // Asignar la nueva URL
-      deleteFileFromLocal(req.file.path);
+    // if (req.file) {
+    //   const newFileUrl = await uploadFileToFilestack(req.file.path);
+    //   req.body.urlFotoPerfil = newFileUrl; // Asignar la nueva URL
+    //   deleteFileFromLocal(req.file.path);
 
-      // Eliminar la foto de perfil antigua de Filestack (si existe)
-      if (usuario.urlFotoPerfil) {
-        // Aquí puedes agregar lógica para eliminar el archivo de Filestack si es necesario
-      }
-    }
+    //   // Eliminar la foto de perfil antigua de Filestack (si existe)
+    //   if (usuario.urlFotoPerfil) {
+    //     // Aquí puedes agregar lógica para eliminar el archivo de Filestack si es necesario
+    //   }
+    // }
 
     // Actualizar el usuario
     const usuarioActualizado = await Usuario.findByIdAndUpdate(
@@ -87,9 +87,9 @@ export const deleteUsuario = async (req, res) => {
       return res.status(404).json({ error: "Usuario no encontrado" });
 
     // Eliminar la foto de perfil de Filestack (si existe)
-    if (usuario.urlFotoPerfil) {
-      // Aquí puedes agregar lógica para eliminar el archivo de Filestack si es necesario
-    }
+    // if (usuario.urlFotoPerfil) {
+    //   // Aquí puedes agregar lógica para eliminar el archivo de Filestack si es necesario
+    // }
 
     res.status(200).json({ message: "Usuario borrado satisfactoriamente" });
   } catch (err) {

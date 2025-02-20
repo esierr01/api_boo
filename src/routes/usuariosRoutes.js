@@ -4,10 +4,10 @@ import upload from '../utils/fileUpload.js';
 
 const router = express.Router();
 
-router.post('/', upload.single('urlFotoPerfil'), createUsuario);
+router.post('/', createUsuario);
 router.get('/', getUsuarios);
 router.get('/:id', getUsuarioById);
-router.put('/:id', upload.single('urlFotoPerfil'), updateUsuario);
+router.put('/:id', updateUsuario);
 router.delete('/:id', deleteUsuario);
 
 export default router;

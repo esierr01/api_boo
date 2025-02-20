@@ -30,7 +30,7 @@ mongoose
   .catch((err) => console.error("Could not connect to MongoDB Atlas", err));
 
 // **Añadido: Endpoint de Verificación de la API**
-app.get("/api/id", (req, res) => {
+app.get("/", (req, res) => {
   res.status(200).json({ message: "API de Boo-App Activa" });
 });
 
