@@ -1,6 +1,5 @@
 import express from 'express';
 import { createUsuario, getUsuarios, getUsuarioById, updateUsuario, deleteUsuario } from '../controllers/usuariosController.js';
-import upload from '../utils/fileUpload.js';
 
 const router = express.Router();
 

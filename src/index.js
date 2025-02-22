@@ -18,14 +18,11 @@ app.use(express.urlencoded({ extended: true })); // Para form-data
 
 // Conexión a MongoDB
 mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URI)
   .then(() => console.log("Conectado a MongoDB Atlas"))
   .catch((err) => {
     console.error("No se pudo conectar a MongoDB Atlas:", err.message);
-    process.exit(1);
+    process.exit(1); // Detener la aplicación si no se puede conectar a la base de datos
   });
 
 // Endpoint de verificación de la API

@@ -5,7 +5,6 @@ import {
   getObservacionById,
   updateObservacion,
   deleteObservacion,
-  responderObservacion,
 } from "../controllers/observacionesController.js";
 
 const router = express.Router();

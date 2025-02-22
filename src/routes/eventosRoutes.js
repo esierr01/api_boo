@@ -1,5 +1,5 @@
 import express from "express";
-import { createEvento, getEventos, getEventoById, updateEvento, deleteEvento, aprobarRechazarEvento } from "../controllers/eventosController.js";
+import { createEvento, getEventos, getEventoById, updateEvento, deleteEvento } from "../controllers/eventosController.js";
 
 const router = express.Router();
 
