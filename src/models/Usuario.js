@@ -6,7 +6,7 @@ const UsuarioSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     rol: { type: String, required: true },
-    urlFotoPerfil: { type: String, required: false },
+    urlFotoPerfil: { type: String },
     fechaRegistro: { type: String },
     ultimaActividad: { type: String },
     activo: { type: Boolean, default: true },

@@ -3,6 +3,7 @@ import Usuario from "../models/Usuario.js"; // Importar el modelo de Usuario
 import Evento from "../models/Evento.js"; // Importar el modelo de Evento
 import { obtenerFecha, obtenerHora } from "../utils/fechaHora.js";
 
+// Crear una nueva observación
 export const createObservacion = async (req, res) => {
   req.body.fechaEnvio = obtenerFecha() + " - " + obtenerHora();
 
@@ -24,30 +25,37 @@ export const createObservacion = async (req, res) => {
     await observacion.save();
     res.status(201).json(observacion);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error("Error al crear observación:", err);
+    res.status(500).json({ error: "Ocurrió un error al crear la observación" });
   }
 };
 
+// Obtener todas las observaciones
 export const getObservaciones = async (req, res) => {
   try {
     const observaciones = await Observacion.find();
     res.status(200).json(observaciones);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error("Error al obtener observaciones:", err);
+    res.status(500).json({ error: "Ocurrió un error al obtener las observaciones" });
   }
 };
 
+// Obtener una observación por ID
 export const getObservacionById = async (req, res) => {
   try {
     const observacion = await Observacion.findById(req.params.id);
-    if (!observacion)
-      return res.status(404).json({ error: "Observacion no encontrada" });
+    if (!observacion) {
+      return res.status(404).json({ error: "Observación no encontrada" });
+    }
     res.status(200).json(observacion);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error("Error al obtener observación por ID:", err);
+    res.status(500).json({ error: "Ocurrió un error al obtener la observación" });
   }
 };
 
+// Actualizar una observación
 export const updateObservacion = async (req, res) => {
   try {
     const observacion = await Observacion.findById(req.params.id);
@@ -58,17 +66,12 @@ export const updateObservacion = async (req, res) => {
     // Verificar si se está agregando una respuesta
     if (req.body.respuesta) {
       // Validar que el idUsuarRespuesta exista en la colección de usuarios
-      const usuarioExistente = await Usuario.findById(
-        req.body.idUsuarRespuesta
-      );
+      const usuarioExistente = await Usuario.findById(req.body.idUsuarRespuesta);
       if (!usuarioExistente) {
-        return res
-          .status(400)
-          .json({ error: "El usuario que responde no existe" });
+        return res.status(400).json({ error: "El usuario que responde no existe" });
       }
-
       // Asignar la fecha de respuesta
-      req.body.fechaRespuesta = new Date();
+      req.body.fechaRespuesta = obtenerFecha() + " - " + obtenerHora();
     }
 
     // Actualizar la observación
@@ -79,59 +82,21 @@ export const updateObservacion = async (req, res) => {
     );
     res.status(200).json(observacionActualizada);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error("Error al actualizar observación:", err);
+    res.status(500).json({ error: "Ocurrió un error al actualizar la observación" });
   }
 };
 
+// Eliminar una observación
 export const deleteObservacion = async (req, res) => {
   try {
     const observacion = await Observacion.findByIdAndDelete(req.params.id);
-    if (!observacion)
-      return res.status(404).json({ error: "Observacion no se encuentra" });
-    res.status(200).json({ message: "Observacion borrada satisfactoriamente" });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
-
-export const responderObservacion = async (req, res) => {
-  try {
-    const { id } = req.params; // ID de la observación
-    const { respuesta, idUsuarRespuesta } = req.body; // Datos proporcionados por el usuario
-
-    // Verificar que se proporcionen los campos requeridos
-    if (!respuesta || !idUsuarRespuesta) {
-      return res.status(400).json({
-        error: "Faltan campos requeridos: respuesta e idUsuarRespuesta",
-      });
-    }
-
-    // Verificar si el idUsuarRespuesta existe en la colección de usuarios
-    const usuarioExistente = await Usuario.findById(idUsuarRespuesta);
-    if (!usuarioExistente) {
-      return res
-        .status(400)
-        .json({ error: "El usuario que responde no existe" });
-    }
-
-    // Actualizar los campos específicos
-    const observacionActualizada = await Observacion.findByIdAndUpdate(
-      id,
-      {
-        mensaRespondido: true, // Marcar como respondido
-        respuesta, // Respuesta proporcionada por el usuario
-        idUsuarRespuesta, // ID del usuario que responde
-        fechaRespuesta: obtenerFecha() + " - " + obtenerHora(), // Fecha y hora actual
-      },
-      { new: true } // Devolver el documento actualizado
-    );
-
-    if (!observacionActualizada) {
+    if (!observacion) {
       return res.status(404).json({ error: "Observación no encontrada" });
     }
-
-    res.status(200).json(observacionActualizada);
+    res.status(200).json({ message: "Observación borrada satisfactoriamente" });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    console.error("Error al eliminar observación:", err);
+    res.status(500).json({ error: "Ocurrió un error al eliminar la observación" });
   }
 };
