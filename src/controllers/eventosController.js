@@ -12,6 +12,17 @@ export const createEvento = async (req, res) => {
       return res.status(400).json({ error: "El usuario no existe" });
     }
 
+    // Convertir mitoLeyenda de cadena a booleano
+    if (typeof req.body.mitoLeyenda === "string") {
+      if (req.body.mitoLeyenda.toLowerCase() === "true") {
+        req.body.mitoLeyenda = true;
+      } else if (req.body.mitoLeyenda.toLowerCase() === "false") {
+        req.body.mitoLeyenda = false;
+      } else {
+        return res.status(400).json({ error: "El campo mitoLeyenda debe ser 'true' o 'false'" });
+      }
+    }
+
     const evento = new Evento(req.body);
     await evento.save();
     res.status(201).json(evento);
